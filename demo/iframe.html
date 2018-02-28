@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Boruca Messaging Demo</title>
+    <script src="../src/boruca.js"></script>
+</head>
+<body>
+    <h1>IFrame</h1>
+
+    <script>
+        const targetWindow = window.parent;
+        const targetOrigin = window.location.origin;
+
+        // Overwrite console functions to output to the top window console instead (for debugging)
+        ['log', 'info', 'warn', 'error'].forEach(fn => {
+            console[fn] = function() {
+                const args = Array.from(arguments);
+                args.unshift('IFRAME:');
+                window.top.console[fn].apply(window.top.console, args);
+            }
+        });
+
+        class IFrame {
+            increase(number) {
+                return number + 1;
+            }
+
+            echo(message) {
+                return 'IFrame Echo: ' + message;
+            }
+        }
+
+        Boruca.proxy(targetWindow, targetOrigin, IFrame).then(async topLevelProxy => {
+            console.log(await topLevelProxy.echo("I'm sending this from the iframe!"));
+            console.log(await topLevelProxy.increase(200));
+        });
+    </script>
+</body>
+</html>
