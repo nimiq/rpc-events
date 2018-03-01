@@ -3,6 +3,7 @@
 <head>
     <title>Boruca Messaging Demo</title>
     <script src="../src/boruca.js"></script>
+    <script src="../src/IObservable.js"></script>
 </head>
 <body>
     <h1>Top Frame</h1>
@@ -15,20 +16,22 @@
             const targetWindow = $iframe.contentWindow;
             const targetOrigin = window.location.origin;
 
-            class TopLevel {
-                increase(number) {
-                    return number + 1;
-                }
-
-                echo(message) {
-                    return 'TopLevel Echo: ' + message;
+            class TopLevel extends IObservable {
+                constructor() {
+                    super();
                 }
             }
 
-            const { proxy: IFrameProxy } = await Boruca.proxy(targetWindow, targetOrigin, TopLevel);
+            class TopLevelStub extends Boruca.StubClass(TopLevel) {
 
-            console.log(await IFrameProxy.echo("I'm sending this from the top window!"));
-            console.log(await IFrameProxy.decrease(100));
+            }
+
+            const { proxy, stub: iFrameStub } = await Boruca.proxy(targetWindow, targetOrigin, TopLevel);
+
+            proxy.sayHello();
+
+            iFrameStub.on('test', () => alert('test received'));
+
         })();
     </script>
 </body>

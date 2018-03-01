@@ -3,10 +3,10 @@
 <head>
     <title>Boruca Messaging Demo</title>
     <script src="../src/boruca.js"></script>
+    <script src="../src/IObservable.js"></script>
 </head>
 <body>
     <h1>IFrame</h1>
-
     <script>
         (async function () {
             const targetWindow = window.parent;
@@ -22,21 +22,26 @@
             });
 
             class IFrame {
-                decrease(number) {
-                    return number - 1;
-                }
+               sayHello() {
+                   alert('hello');
+               }
+            }
 
-                echo(message) {
-                    return 'IFrame Echo: ' + message;
+            const proxies = new Set();
+
+            const { proxy: topLevelProxy } = await Boruca.proxy(targetWindow, targetOrigin, IFrame);
+            await Boruca.proxy(target)
+
+            proxies.add(topLevelProxy);
+
+            function onValueChanged() {
+                // check which proxy is registered for event
+                for (const proxy in proxies) {
+                    proxy.fire('test');
                 }
             }
 
-            const { proxy: TopLevelProxy } = await Boruca.proxy(targetWindow, targetOrigin, IFrame);
 
-
-
-            console.log(await TopLevelProxy.echo("I'm sending this from the iframe!"));
-            console.log(await TopLevelProxy.increase(200));
         })();
     </script>
 </body>
