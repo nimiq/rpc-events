@@ -25,7 +25,7 @@
 
             const proxies = new Set();
 
-            const { proxy: topLevelProxy } = await Boruca.proxy(targetWindow, targetOrigin);
+            const { proxy: topLevelProxy } = await Boruca.proxy(targetWindow, targetOrigin, IFrame);
 
             proxies.add(topLevelProxy);
 
