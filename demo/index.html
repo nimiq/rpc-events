@@ -9,24 +9,26 @@
     <iframe src="./iframe.html"></iframe>
 
     <script>
-        const $iframe = document.querySelector('iframe');
-        const targetWindow = $iframe.contentWindow;
-        const targetOrigin = window.location.origin;
+        (async function () {
+            const $iframe = document.querySelector('iframe');
+            const targetWindow = $iframe.contentWindow;
+            const targetOrigin = window.location.origin;
 
-        class TopLevel {
-            increase(number) {
-                return number + 1;
+            class TopLevel {
+                increase(number) {
+                    return number + 1;
+                }
+
+                echo(message) {
+                    return 'TopLevel Echo: ' + message;
+                }
             }
 
-            echo(message) {
-                return 'TopLevel Echo: ' + message;
-            }
-        }
+            const iFrameProxy = await Boruca.proxy(targetWindow, targetOrigin, TopLevel);
 
-        Boruca.proxy(targetWindow, targetOrigin, TopLevel).then(async iFrameProxy => {
             console.log(await iFrameProxy.echo("I'm sending this from the top window!"));
             console.log(await iFrameProxy.increase(100));
-        });
+        })();
     </script>
 </body>
 </html>
