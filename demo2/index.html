@@ -16,15 +16,15 @@
             const targetWindow = $iframe.contentWindow;
             const targetOrigin = window.location.origin;
 
-            class TopLevel extends IObservable {
+            /*class TopLevel extends IObservable {
 
-            }
+            }*/
 
             /*class TopLevelStub extends Boruca.StubClass(TopLevel) {
 
             }*/
 
-            const { stub: iFrameStub } = await Boruca.proxy(targetWindow, targetOrigin, TopLevel);
+            const { stub: iFrameStub } = await Boruca.proxy(targetWindow, targetOrigin);
 
             iFrameStub.on('test', () => alert('test received'));
 
