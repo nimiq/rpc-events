@@ -21,16 +21,11 @@
                 }
             });
 
-            class IFrame {
-               sayHello() {
-                   alert('hello');
-               }
-            }
+            class IFrame extends IObservable {}
 
             const proxies = new Set();
 
-            const { proxy: topLevelProxy } = await Boruca.proxy(targetWindow, targetOrigin, IFrame);
-            await Boruca.proxy(target)
+            const { proxy: topLevelProxy } = await Boruca.proxy(targetWindow, targetOrigin);
 
             proxies.add(topLevelProxy);
 
@@ -41,8 +36,9 @@
                 }
             }
 
-
+            onValueChanged();
         })();
     </script>
+
 </body>
 </html>

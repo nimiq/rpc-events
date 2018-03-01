@@ -17,18 +17,14 @@
             const targetOrigin = window.location.origin;
 
             class TopLevel extends IObservable {
-                constructor() {
-                    super();
-                }
-            }
-
-            class TopLevelStub extends Boruca.StubClass(TopLevel) {
 
             }
 
-            const { proxy, stub: iFrameStub } = await Boruca.proxy(targetWindow, targetOrigin, TopLevel);
+            /*class TopLevelStub extends Boruca.StubClass(TopLevel) {
 
-            proxy.sayHello();
+            }*/
+
+            const { stub: iFrameStub } = await Boruca.proxy(targetWindow, targetOrigin, TopLevel);
 
             iFrameStub.on('test', () => alert('test received'));
 
