@@ -23,17 +23,10 @@
 
             class IFrame extends IObservable {}
 
-            const proxies = new Set();
-
-            const { proxy: topLevelProxy } = await Boruca.proxy(targetWindow, targetOrigin, IFrame);
-
-            proxies.add(topLevelProxy);
+            const { proxy: otherSide, stub: thisSide } = await Boruca.proxy(targetWindow, targetOrigin, IFrame);
 
             function onValueChanged() {
-                // check which proxy is registered for event
-                for (const proxy in proxies) {
-                    proxy.fire('test');
-                }
+                thisSide.fire('test');
             }
 
             onValueChanged();

@@ -24,9 +24,10 @@
 
             }*/
 
-            const { stub: iFrameStub } = await Boruca.proxy(targetWindow, targetOrigin);
+            const { proxy: otherSide } = await Boruca.proxy(targetWindow, targetOrigin);
 
-            iFrameStub.on('test', () => alert('test received'));
+            // FIXME: This doesn't work, because inherited functions are not found with Object.getOwnPropertyNames(Class.prototype)...
+            otherSide.on('test', () => alert('test received'));
 
         })();
     </script>
