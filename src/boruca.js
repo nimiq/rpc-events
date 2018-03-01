@@ -20,7 +20,7 @@ class Boruca {
         this._resolve = resolve;
         this._error = error;
 
-        this._stub = new (Boruca.StubClass(clazz))(this._targetWindow, this._targetOrigin, this._window);
+        this._stub = new (Boruca.StubClass(clazz || class {}))(this._targetWindow, this._targetOrigin, this._window);
 
         this._window.addEventListener('message', this._createProxy.bind(this));
 
