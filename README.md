@@ -14,7 +14,7 @@ Include Boruca in both your windows:
 Boruca works only if a proxy is created in both windows! If only one-way function calling is required, the calling side can pass a dummy `class {}` into the `Boruca.proxy()` function.
 
 ```html
-<script src="https://nimiq.github.io/libraries/boruca-messaging/src/boruca.js"></script>
+<script src="https://nimiq.github.io/libraries/boruca-messaging/src/Boruca.js"></script>
 ```
 _A minified file and an ES6 Module is currently not provided._
 
