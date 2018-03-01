@@ -3,13 +3,13 @@
 <head>
     <title>Boruca Messaging Demo</title>
     <script src="../src/boruca.js"></script>
-    <script src="../src/IObservable.js"></script>
 </head>
 <body>
 <h1>Top Frame</h1>
 <iframe src="./iframe.html"></iframe>
 
-<script>
+<script type="module">
+    import IObserver from '../src/IObserver.js';
 
     (async function () {
         const $iframe = document.querySelector('iframe');
@@ -19,10 +19,11 @@
         class TopLevel extends IObserver {
         }
 
-        const { stub: thisSide } = await Boruca.proxy(targetWindow, targetOrigin, TopLevel);
+        const { proxy: nanoProxy, stub: thisSide } = await Boruca.proxy(targetWindow, targetOrigin, TopLevel);
 
-        // FIXME: This doesn't work, because inherited functions are not found with Object.getOwnPropertyNames(Class.prototype)...
-        thisSide.on('test', () => alert('test received'));
+        thisSide.on('test', (value) => alert(`test received: ${value}`));
+
+        alert(await nanoProxy.getBalance());
     })();
 </script>
 </body>

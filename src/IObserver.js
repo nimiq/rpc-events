@@ -1,4 +1,4 @@
-class IObserver {
+export default class IObserver {
     constructor() {
         this._listeners = new Map();
     }
@@ -14,11 +14,11 @@ class IObserver {
         this._listeners.get(event).remove(callback);
     }
 
-    fire(event) {
+    fire(event, value) {
         if (!this._listeners.get(event)) return;
 
         for (const listener of this._listeners.get(event)) {
-            listener();
+            listener(value);
         }
     }
 }

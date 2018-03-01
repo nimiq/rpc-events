@@ -1,6 +1,34 @@
-'use strict';
-
 class Boruca {
+
+    /** @param {Object} x
+     *
+     * @returns {string[]}
+     */
+    static _deepProps(x) {
+        if (!x || x === Object.prototype) return [];
+
+        const ownProps = Object.getOwnPropertyNames(x);
+
+        const deepProps = Boruca._deepProps(Object.getPrototypeOf(x));
+
+        return [...ownProps, ...deepProps];
+    }
+
+    /** @param {Object} x
+     *
+     * @returns {string[]}
+     */
+    static _deepFunctions(x) {
+        return Boruca._deepProps(x).filter(name => typeof x[name] === 'function');
+    }
+
+    /** @param {Object} x
+     *
+     * @returns {Set<string>}
+     */
+    static _userFunctions(x) {
+        return new Set(Boruca._deepFunctions(x).filter(name => name !== 'constructor' && !name.includes('__')));
+    }
 
     /**
      * Establishes a connection to the target frame.
@@ -146,11 +174,11 @@ class Boruca {
             }
         };
         Stub.prototype._funcNames = [];
-        for (const funcName of Object.getOwnPropertyNames(clazz.prototype)) {
-            if (typeof clazz.prototype[funcName] === 'function' && funcName !== 'constructor') {
-                Stub.prototype._funcNames.push(funcName);
-            }
+
+        for (const funcName of Boruca._userFunctions(clazz.prototype)) {
+            Stub.prototype._funcNames.push(funcName);
         }
+
         return Stub;
     }
 }
