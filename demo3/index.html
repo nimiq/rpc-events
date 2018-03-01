@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Boruca Messaging Demo</title>
+    <script src="../src/boruca.js"></script>
+    <script src="../src/IObservable.js"></script>
+</head>
+<body>
+    <h1>Top Frame</h1>
+    <iframe src="./iframe.html"></iframe>
+
+    <script>
+
+        (async function () {
+            const $iframe = document.querySelector('iframe');
+            const targetWindow = $iframe.contentWindow;
+            const targetOrigin = window.location.origin;
+
+            class TopLevel {
+                constructor() {
+                    //super();
+                    this._listeners = new Map();
+                }
+
+                on(event, callback) {
+                    if (!this._listeners.get(event)) {
+                        this._listeners.set(event, new Set());
+                    }
+                    this._listeners.get(event).add(callback);
+                }
+
+                off(event, callback) {
+                    this._listeners.get(event).remove(callback);
+                }
+
+                fire(event) {
+                    if (!this._listeners.get(event)) return;
+
+                    for (const listener of this._listeners.get(event)) {
+                        listener();
+                    }
+                }
+            }
+
+            const { stub: thisSide } = await Boruca.proxy(targetWindow, targetOrigin, TopLevel);
+
+            thisSide.on('test', () => alert('test received'));
+        })();
+    </script>
+</body>
+</html>

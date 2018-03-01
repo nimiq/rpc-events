@@ -1,4 +1,4 @@
-class IObservable {
+class IObserver {
     constructor() {
         this._listeners = new Map();
     }

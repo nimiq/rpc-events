@@ -2,34 +2,28 @@
 <html>
 <head>
     <title>Boruca Messaging Demo</title>
-    <script src="../src/Boruca.js"></script>
+    <script src="../src/boruca.js"></script>
     <script src="../src/IObservable.js"></script>
 </head>
 <body>
-    <h1>Top Frame</h1>
-    <iframe src="./iframe.html"></iframe>
+<h1>Top Frame</h1>
+<iframe src="./iframe.html"></iframe>
 
-    <script>
+<script>
 
-        (async function () {
-            const $iframe = document.querySelector('iframe');
-            const targetWindow = $iframe.contentWindow;
-            const targetOrigin = window.location.origin;
+    (async function () {
+        const $iframe = document.querySelector('iframe');
+        const targetWindow = $iframe.contentWindow;
+        const targetOrigin = window.location.origin;
 
-            /*class TopLevel extends IObservable {
+        class TopLevel extends IObserver {
+        }
 
-            }*/
+        const { stub: thisSide } = await Boruca.proxy(targetWindow, targetOrigin, TopLevel);
 
-            /*class TopLevelStub extends Boruca.StubClass(TopLevel) {
-
-            }*/
-
-            const { proxy: otherSide } = await Boruca.proxy(targetWindow, targetOrigin);
-
-            // FIXME: This doesn't work, because inherited functions are not found with Object.getOwnPropertyNames(Class.prototype)...
-            otherSide.on('test', () => alert('test received'));
-
-        })();
-    </script>
+        // FIXME: This doesn't work, because inherited functions are not found with Object.getOwnPropertyNames(Class.prototype)...
+        thisSide.on('test', () => alert('test received'));
+    })();
+</script>
 </body>
 </html>
