@@ -24,8 +24,8 @@ class Boruca {
 
         this._window.addEventListener('message', this._createProxy.bind(this));
 
-        this._sendInitCommand()
-    };
+        this._sendInitCommand();
+    }
 
     _createProxy(msg) {
         if(msg.data.command !== 'init' || this._proxy) return;
@@ -37,7 +37,7 @@ class Boruca {
         try {
             this._proxy = new (Boruca.ProxyClass(msg.data.args))(this._targetWindow, this._targetOrigin, this._window);
             this._resolve({
-                proxy: this ._proxy,
+                proxy: this._proxy,
                 stub: this._stub
             });
         } catch (e) {
