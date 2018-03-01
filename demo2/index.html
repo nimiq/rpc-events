@@ -9,19 +9,18 @@
 <iframe src="./iframe.html"></iframe>
 
 <script type="module">
-    import IObserver from '../src/IObserver.js';
+    import EventListener from '../src/IObserver.js';
 
     (async function () {
         const $iframe = document.querySelector('iframe');
         const targetWindow = $iframe.contentWindow;
         const targetOrigin = window.location.origin;
 
-        class TopLevel extends IObserver {
-        }
+        const eventListener = new EventListener();
 
-        const { proxy: nanoProxy, stub: thisSide } = await Boruca.proxy(targetWindow, targetOrigin, TopLevel);
+        const { proxy: nanoProxy, stub: thisSide } = await Boruca.proxy(targetWindow, targetOrigin, eventListener.Receiver);
 
-        thisSide.on('test', (value) => alert(`test received: ${value}`));
+        eventListener.on('test', (value) => alert(`test received: ${value}`));
 
         alert(await nanoProxy.getBalance());
     })();
