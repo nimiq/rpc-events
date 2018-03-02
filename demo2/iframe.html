@@ -27,21 +27,9 @@
             }
         }
 
-        const proxies = new Set();
-
         const { proxy: topLevelProxy } = await Boruca.proxy(targetWindow, targetOrigin, NanoApi);
 
-        proxies.add(topLevelProxy);
-
-        function onValueChanged() {
-            // check which proxy is registered for event
-            for (const proxy of proxies) {
-                proxy.fire('test', 23.3);
-            }
-        }
-
-        onValueChanged();
-
+        topLevelProxy.fire('test', 23.3);
     })();
 </script>
 
