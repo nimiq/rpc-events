@@ -1,4 +1,4 @@
-class Boruca {
+export default class Boruca {
 
     /** @param {Object} x
      *

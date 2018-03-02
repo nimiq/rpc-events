@@ -2,14 +2,14 @@
 <html>
 <head>
     <title>Boruca Messaging Demo</title>
-    <script src="../src/boruca.js"></script>
 </head>
 <body>
 <h1>Top Frame</h1>
 <iframe src="./iframe.html"></iframe>
 
 <script type="module">
-    import EventListener from '../src/EventListener.js';
+    import Boruca from '../src/boruca.js';
+    import EventListener from '../src/event-listener.js';
 
     (async function () {
         const $iframe = document.querySelector('iframe');

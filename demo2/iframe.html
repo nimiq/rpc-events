@@ -2,11 +2,12 @@
 <html>
 <head>
     <title>Boruca Messaging Demo</title>
-    <script src="../src/boruca.js"></script>
 </head>
 <body>
 <h1>IFrame</h1>
-<script>
+<script type="module">
+    import Boruca from '../src/boruca.js';
+
     (async function () {
         const targetWindow = window.parent;
         const targetOrigin = window.location.origin;
@@ -25,7 +26,6 @@
                 return 25;
             }
         }
-
 
         const proxies = new Set();
 
