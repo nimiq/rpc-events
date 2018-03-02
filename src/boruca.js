@@ -28,7 +28,7 @@ export default class Boruca {
     }
 
     _createProxy(msg) {
-        if(msg.data.command !== 'init' || this._proxy) return;
+        if(msg.data.command !== 'boruca-init' || this._proxy) return;
 
         this._proxy = true; // Placeholder to avoid race conditions
 
@@ -46,7 +46,7 @@ export default class Boruca {
     }
 
     _sendInitCommand() {
-        this._targetWindow.postMessage({command: 'init', args: this._stub._funcNames}, this._targetOrigin);
+        this._targetWindow.postMessage({command: 'boruca-init', args: this._stub._funcNames}, this._targetOrigin);
     }
 
     static ProxyClass(funcNames) {
