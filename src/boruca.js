@@ -3,7 +3,9 @@ export default class Boruca {
     /**
      * Establishes a connection to the target frame.
      * Takes the class that should be made available to the target frame as `clazz` parameter.
-     * Returns a promise that resolves to a class that mirrors the class that is made available in the target frame.
+     * Returns a promise that resolves to an object that contains a proxy class that mirrors
+     * the class that is made available in the target frame, and a stub class that is the
+     * wrapped clazz.
      */
     static proxy(targetWindow, targetOrigin, clazz, ownWindow) {
         return new Promise((resolve, error) => {
@@ -154,6 +156,14 @@ export default class Boruca {
 
     /** @param {Object} proto
      *
+     * @returns {Set<string>}
+     */
+    static _userFunctions(proto) {
+        return new Set(Boruca._deepFunctions(proto).filter(name => name !== 'constructor' && !name.includes('__')));
+    }
+
+    /** @param {Object} proto
+     *
      * @returns {string[]}
      */
     static _deepFunctions(proto) {
@@ -169,13 +179,5 @@ export default class Boruca {
         const deepFunctions = Boruca._deepFunctions(Object.getPrototypeOf(proto));
 
         return [...ownFunctions, ...deepFunctions];
-    }
-
-    /** @param {Object} proto
-     *
-     * @returns {Set<string>}
-     */
-    static _userFunctions(proto) {
-        return new Set(Boruca._deepFunctions(proto).filter(name => name !== 'constructor' && !name.includes('__')));
     }
 }
