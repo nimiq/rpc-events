@@ -1,32 +1,5 @@
 export default class Boruca {
 
-    /** @param {Object} x
-     *
-     * @returns {string[]}
-     */
-    static _deepFunctions(x) {
-        if (!x || x === Object.prototype) return [];
-
-        const ownProps = Object.getOwnPropertyNames(x);
-
-        const ownFunctions = ownProps.filter(name => {
-            const desc = Object.getOwnPropertyDescriptor (x, name);
-            return !!desc && typeof desc.value === 'function';
-        });
-
-        const deepFunctions = Boruca._deepFunctions(Object.getPrototypeOf(x));
-
-        return [...ownFunctions, ...deepFunctions];
-    }
-
-    /** @param {Object} x
-     *
-     * @returns {Set<string>}
-     */
-    static _userFunctions(x) {
-        return new Set(Boruca._deepFunctions(x).filter(name => name !== 'constructor' && !name.includes('__')));
-    }
-
     /**
      * Establishes a connection to the target frame.
      * Takes the class that should be made available to the target frame as `clazz` parameter.
@@ -177,5 +150,32 @@ export default class Boruca {
         }
 
         return Stub;
+    }
+
+    /** @param {Object} proto
+     *
+     * @returns {string[]}
+     */
+    static _deepFunctions(proto) {
+        if (!proto || proto === Object.prototype) return [];
+
+        const ownProps = Object.getOwnPropertyNames(proto);
+
+        const ownFunctions = ownProps.filter(name => {
+            const desc = Object.getOwnPropertyDescriptor (proto, name);
+            return !!desc && typeof desc.value === 'function';
+        });
+
+        const deepFunctions = Boruca._deepFunctions(Object.getPrototypeOf(proto));
+
+        return [...ownFunctions, ...deepFunctions];
+    }
+
+    /** @param {Object} proto
+     *
+     * @returns {Set<string>}
+     */
+    static _userFunctions(proto) {
+        return new Set(Boruca._deepFunctions(proto).filter(name => name !== 'constructor' && !name.includes('__')));
     }
 }
