@@ -27,7 +27,13 @@
             }
         }
 
-        const { proxy: topLevelProxy } = await Boruca.proxy(targetWindow, targetOrigin, NanoApi);
+        class InheritedNanoApi extends NanoApi {
+            findFunction() {
+                return('This is not the function you are looking for...');
+            }
+        }
+
+        const { proxy: topLevelProxy } = await Boruca.proxy(targetWindow, targetOrigin, InheritedNanoApi);
 
         topLevelProxy.fire('test', 23.3);
     })();

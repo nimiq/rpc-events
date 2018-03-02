@@ -23,6 +23,7 @@
         eventListener.on('test', (value) => alert(`test received: ${value}`));
 
         alert(await nanoProxy.getBalance());
+        alert(await nanoProxy.findFunction());
     })();
 </script>
 </body>

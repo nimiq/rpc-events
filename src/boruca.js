@@ -4,22 +4,19 @@ export default class Boruca {
      *
      * @returns {string[]}
      */
-    static _deepProps(x) {
+    static _deepFunctions(x) {
         if (!x || x === Object.prototype) return [];
 
         const ownProps = Object.getOwnPropertyNames(x);
 
-        const deepProps = Boruca._deepProps(Object.getPrototypeOf(x));
+        const ownFunctions = ownProps.filter(name => {
+            const desc = Object.getOwnPropertyDescriptor (x, name);
+            return !!desc && typeof desc.value === 'function';
+        });
 
-        return [...ownProps, ...deepProps];
-    }
+        const deepFunctions = Boruca._deepFunctions(Object.getPrototypeOf(x));
 
-    /** @param {Object} x
-     *
-     * @returns {string[]}
-     */
-    static _deepFunctions(x) {
-        return Boruca._deepProps(x).filter(name => typeof x[name] === 'function');
+        return [...ownFunctions, ...deepFunctions];
     }
 
     /** @param {Object} x
