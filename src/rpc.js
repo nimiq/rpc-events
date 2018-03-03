@@ -8,13 +8,13 @@ export default class RPC {
             const interfaceListener = (message) => {
                 if (message.origin !== targetWindow.origin
                     || message.data.status !== 'OK'
-                    || message.data.result.interfaceName !== interfaceName) return;
+                    || message.data.interfaceName !== interfaceName) return;
 
                 self.removeEventListener('message', interfaceListener);
 
                 connected = true;
 
-                resolve(new (RPC._Client(targetWindow, interfaceName, message.data.result.interfaceDescription))());
+                resolve(new (RPC._Client(targetWindow, interfaceName, message.data.result))());
             };
 
             self.addEventListener('message', interfaceListener);
@@ -49,7 +49,9 @@ export default class RPC {
             }
 
             _receive(message) {
-                // Discard all messages from unwanted origins or which are not replies
+                // Discard all messages from unwanted origins
+                // or which are not replies
+                // or which are not from the correct interface
                 if (message.origin !== this._targetWindow.origin
                     || !message.data.status
                     || message.data.interfaceName !== interfaceName) return;
@@ -77,7 +79,7 @@ export default class RPC {
              */
             _invoke(command, args = []) {
                 return new Promise((resolve, error) => {
-                    const obj = { command: command, interfaceName: interfaceName, args: args, id: Util.getRandomId() };
+                    const obj = { command, interfaceName, args, id: Util.getRandomId() };
                     this._waiting.set(obj.id, { resolve, error });
                     this._targetWindow.postMessage(obj, targetWindow.origin);
                 });
@@ -122,12 +124,9 @@ export default class RPC {
                 try {
                     if (message.data.interfaceName !== this._name) return;
 
-                    let args = message.data.args || [];
-                    if (message.data.command !== 'getRpcInterface') {
-                        // inject calling window and origin to function args
-                        const { source: callingWindow, origin: callingOrigin } = message;
-                        args = [...message.data.args, callingWindow, callingOrigin];
-                    }
+                    // Inject calling window and origin to function args
+                    const { source: callingWindow, origin: callingOrigin } = message;
+                    args = [...message.data.args, callingWindow, callingOrigin];
 
                     const result = this._invoke(message.data.command, args);
 
@@ -155,7 +154,7 @@ export default class RPC {
 
         // Add function to retrieve the interface
         Server.prototype['getRpcInterface'] = function() {
-           return { interfaceName: this._name, interfaceDescription: Server.prototype._rpcInterface };
+           return Server.prototype._rpcInterface;
         }
 
         return Server;

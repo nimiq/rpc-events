@@ -7,9 +7,6 @@ export default class EventClient {
         return client;
     }
 
-    /**
-     * @param {string} [name
-     */
     constructor(targetWindow) {
         this._listeners = new Map();
         this._targetWindow = targetWindow;
@@ -17,8 +14,8 @@ export default class EventClient {
     }
 
     _receive({origin, data: {event, value}}) {
-        // Discard all messages from unwanted origins
-        if (origin !== this._targetWindow.origin) return;
+        // Discard all messages from unwanted origins or which are not events
+        if (origin !== this._targetWindow.origin || !event) return;
 
         if (!this._listeners.get(event)) return;
 
