@@ -14,7 +14,7 @@ export default class RPC {
 
                 connected = true;
 
-                resolve(new (RPC._Client(targetWindow, message.data.result.interfaceDescription))());
+                resolve(new (RPC._Client(targetWindow, interfaceName, message.data.result.interfaceDescription))());
             };
 
             self.addEventListener('message', interfaceListener);
@@ -22,7 +22,7 @@ export default class RPC {
             const tryToConnect = () => {
                 if (connected) return;
 
-                targetWindow.postMessage({ command: 'getRpcInterface', args: [interfaceName], id: 0 }, targetWindow.origin);
+                targetWindow.postMessage({ command: 'getRpcInterface', interfaceName, id: 0 }, targetWindow.origin);
                 setTimeout(tryToConnect, 1000);
             }
 
@@ -32,7 +32,7 @@ export default class RPC {
         });
     }
 
-    static _Client(targetWindow, funcNames) {
+    static _Client(targetWindow, interfaceName, funcNames) {
         const Client = class {
             /**
              * @param {string} [name
@@ -50,12 +50,14 @@ export default class RPC {
 
             _receive(message) {
                 // Discard all messages from unwanted origins or which are not replies
-                if (message.origin !== this._targetWindow.origin || !message.data.status) return;
+                if (message.origin !== this._targetWindow.origin
+                    || !message.data.status
+                    || message.data.interfaceName !== interfaceName) return;
 
                 const callback = this._waiting.get(message.data.id);
 
                 if (!callback) {
-                    console.log('Unknown reply', message);
+                    console.log('Unknown reply', message.data);
                 } else {
                     this._waiting.delete(message.data.id);
 
@@ -75,7 +77,7 @@ export default class RPC {
              */
             _invoke(command, args = []) {
                 return new Promise((resolve, error) => {
-                    const obj = { command: command, args: args, id: Util.getRandomId() };
+                    const obj = { command: command, interfaceName: interfaceName, args: args, id: Util.getRandomId() };
                     this._waiting.set(obj.id, { resolve, error });
                     this._targetWindow.postMessage(obj, targetWindow.origin);
                 });
@@ -104,6 +106,7 @@ export default class RPC {
         const Server = class extends clazz {
             constructor() {
                 super();
+                this._name = Server.prototype.__proto__.constructor.name;
                 self.addEventListener('message', this._receive.bind(this));
             }
 
@@ -112,11 +115,13 @@ export default class RPC {
             }
 
             _replyTo(message, status, result) {
-                message.source.postMessage({ status, result, id: message.data.id }, message.origin);
+                message.source.postMessage({ status, result, interfaceName: this._name, id: message.data.id }, message.origin);
             }
 
             _receive(message) {
                 try {
+                    if (message.data.interfaceName !== this._name) return;
+
                     let args = message.data.args || [];
                     if (message.data.command !== 'getRpcInterface') {
                         // inject calling window and origin to function args
@@ -150,7 +155,7 @@ export default class RPC {
 
         // Add function to retrieve the interface
         Server.prototype['getRpcInterface'] = function() {
-           return { interfaceName: Server.prototype.__proto__.constructor.name, interfaceDescription: Server.prototype._rpcInterface };
+           return { interfaceName: this._name, interfaceDescription: Server.prototype._rpcInterface };
         }
 
         return Server;
