@@ -112,8 +112,8 @@ export default class RPC {
 
             _receive(message) {
                 try {
-                    const { source: callingWindow, origin: callingOrigin } = message;
-                    const result = this._invoke(message.data.command, [...message.data.args, callingWindow, callingOrigin]);
+                    //const { source: callingWindow, origin: callingOrigin } = message;
+                    const result = this._invoke(message.data.command, message.data.args);
                     if (result instanceof Promise) {
                         result.then((finalRes) => { this._result(message, 'OK', finalRes); });
                     } else {
