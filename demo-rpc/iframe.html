@@ -6,7 +6,7 @@
 <body>
 <h1>IFrame</h1>
 <script type="module">
-    import RPC from '../src/rpc.js';
+    import {RPC} from '../src/boruca.js';
 
         (async function () {
             const targetWindow = window.parent;
@@ -31,7 +31,7 @@
                 }
             }
 
-            const rpcServer = new (RPC.Server(window, IFrame))();
+            new (RPC.Server(IFrame))();
         })();
     </script>
 </body>

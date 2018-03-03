@@ -3,7 +3,7 @@ import RPC from './rpc.js';
 export default class EventClient {
     static async create(targetWindow) {
         const client = new EventClient(targetWindow);
-        client._rpcClient = new (await RPC.Client(targetWindow, self))();
+        client._rpcClient = new (await RPC.Client(targetWindow))();
         return client;
     }
     /**
@@ -12,7 +12,7 @@ export default class EventClient {
     constructor(targetWindow) {
         this._listeners = new Map();
         this._targetWindow = targetWindow;
-        self.onmessage = this._receive.bind(this);
+        self.addEventListener('message', this._receive.bind(this));
     }
 
     _receive({origin, data: {event, value}}) {
@@ -35,8 +35,8 @@ export default class EventClient {
     }
 
     off(event, callback) {
-        this._listeners.get(event).remove(callback);
-        if (this._listeners.get(event).length === 0) {
+        this._listeners.get(event).delete(callback);
+        if (this._listeners.get(event).size === 0) {
             this._listeners.delete(event);
             this._rpcClient.off(event);
         }

@@ -8,13 +8,13 @@
 <iframe src="./iframe.html"></iframe>
 
 <script type="module">
-    import RPC from '../src/rpc.js';
+    import {RPC} from '../src/boruca.js';
 
         (async function () {
             const $iframe = document.querySelector('iframe');
             const targetWindow = $iframe.contentWindow;
 
-            const rpcClient = new (await RPC.Client(targetWindow, self))();
+            const rpcClient = new (await RPC.Client(targetWindow))();
 
             console.log(await rpcClient.echo("I'm sending this from the top window!"));
             console.log(await rpcClient.decrease(100));

@@ -1,21 +1,21 @@
 import Util from './util.js';
 
 export default class RPC {
-    static async Client(targetWindow, ownWindow) {
+    static async Client(targetWindow) {
         return new Promise((resolve, reject) => {
             let connected = false;
 
             const interfaceListener = (message) => {
                 if (message.origin !== targetWindow.origin || message.data.status !== 'OK') return;
 
-                ownWindow.removeEventListener('message', interfaceListener);
+                self.removeEventListener('message', interfaceListener);
 
                 connected = true;
 
-                resolve(RPC._Client(targetWindow, ownWindow, message.data.result));
+                resolve(RPC._Client(targetWindow, message.data.result));
             };
 
-            ownWindow.addEventListener('message', interfaceListener);
+            self.addEventListener('message', interfaceListener);
 
             const tryToConnect = () => {
                 if (connected) return;
@@ -30,21 +30,20 @@ export default class RPC {
         });
     }
 
-    static _Client(targetWindow, ownWindow, funcNames) {
+    static _Client(targetWindow, funcNames) {
         const Client = class {
             /**
              * @param {string} [name
              */
             constructor() {
-                this._window = ownWindow;
                 this._targetWindow = targetWindow;
-                this._window.addEventListener('message', this._receive.bind(this));
                 /** @type {Map.<number,{resolve:Function,error:Function}>} */
                 this._waiting = new Map();
+                self.addEventListener('message', this._receive.bind(this));
             }
 
             close() {
-                this._window.removeEventListener('message', this._receive.bind(this));
+                self.removeEventListener('message', this._receive.bind(this));
             }
 
             _receive(message) {
@@ -95,15 +94,15 @@ export default class RPC {
      * @return {T extends clazz}
      * @constructor
      */
-    static Server(ownWindow, clazz) {
+    static Server(clazz) {
         const Server = class extends clazz {
             constructor() {
                 super();
-                ownWindow.addEventListener('message', this._receive.bind(this));
+                self.addEventListener('message', this._receive.bind(this));
             }
 
             close() {
-                ownWindow.removeEventListener('message', this._receive.bind(this));
+                self.removeEventListener('message', this._receive.bind(this));
             }
 
             _result(message, status, result) {
@@ -112,8 +111,15 @@ export default class RPC {
 
             _receive(message) {
                 try {
-                    //const { source: callingWindow, origin: callingOrigin } = message;
-                    const result = this._invoke(message.data.command, message.data.args);
+                    let args = [];
+                    if (message.data.command !== 'getInterface') {
+                        // inject calling window and origin to function args
+                        const { source: callingWindow, origin: callingOrigin } = message;
+                        args = [...message.data.args, callingWindow, callingOrigin];
+                    }
+
+                    const result = this._invoke(message.data.command, args);
+
                     if (result instanceof Promise) {
                         result.then((finalRes) => { this._result(message, 'OK', finalRes); });
                     } else {

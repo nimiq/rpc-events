@@ -8,8 +8,7 @@
 <iframe src="./iframe.html"></iframe>
 
 <script type="module">
-    import RPC from '../src/rpc.js';
-    import EventClient from '../src/event-client.js';
+    import { EventClient } from '../src/boruca.js';
 
         (async function () {
             const $iframe = document.querySelector('iframe');
@@ -17,7 +16,22 @@
 
             const eventClient = await EventClient.create(targetWindow);
 
-            eventClient.on('test', (value) => console.log(`test received: ${value}`));
+            function test(value) {
+                console.log(`test received: ${value}`);
+            }
+
+            function doubleTest(value) {
+                console.log(`double test: ${value}`);
+            }
+
+            const boundDoubleTest = doubleTest.bind(self);
+            const boundTest = test.bind(self);
+
+            eventClient.on('test', boundTest) ;
+            eventClient.on('test', boundDoubleTest) ;
+
+            setTimeout(() => eventClient.off('test', boundDoubleTest), 2500);
+            setTimeout(() => eventClient.off('test', boundTest), 7000);
         })();
     </script>
 </body>
