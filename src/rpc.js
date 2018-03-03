@@ -12,7 +12,7 @@ export default class RPC {
 
                 connected = true;
 
-                resolve(RPC._Client(targetWindow, message.data.result));
+                resolve(new (RPC._Client(targetWindow, message.data.result))());
             };
 
             self.addEventListener('message', interfaceListener);
@@ -89,12 +89,16 @@ export default class RPC {
         return Client;
     }
 
+    static Server(clazz) {
+        return new (RPC._Server(clazz))();
+    }
+
     /**
      * @param {object} clazz
      * @return {T extends clazz}
      * @constructor
      */
-    static Server(clazz) {
+    static _Server(clazz) {
         const Server = class extends clazz {
             constructor() {
                 super();

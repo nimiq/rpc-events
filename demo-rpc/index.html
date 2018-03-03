@@ -14,7 +14,7 @@
             const $iframe = document.querySelector('iframe');
             const targetWindow = $iframe.contentWindow;
 
-            const rpcClient = new (await RPC.Client(targetWindow))();
+            const rpcClient = await RPC.Client(targetWindow);
 
             console.log(await rpcClient.echo("I'm sending this from the top window!"));
             console.log(await rpcClient.decrease(100));

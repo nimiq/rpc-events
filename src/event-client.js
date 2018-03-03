@@ -3,7 +3,7 @@ import RPC from './rpc.js';
 export default class EventClient {
     static async create(targetWindow) {
         const client = new EventClient(targetWindow);
-        client._rpcClient = new (await RPC.Client(targetWindow))();
+        client._rpcClient = await RPC.Client(targetWindow);
         return client;
     }
     /**

@@ -7,7 +7,7 @@ export default class EventServer {
     constructor() {
         this._listeners = new Map();
         const that = this;
-        new (RPC.Server(class {
+        RPC.Server(class {
             on(event, callingWindow, callingOrigin) {
                 if (!that._listeners.get(event)) {
                     that._listeners.set(event, new Map());
@@ -24,7 +24,7 @@ export default class EventServer {
                     that._listeners.delete(event);
                 }
             }
-        }))();
+        });
     }
 
     fire(event, value) {
