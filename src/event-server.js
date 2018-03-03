@@ -30,8 +30,8 @@ export default class EventServer {
     fire(event, value) {
         if (!this._listeners.get(event)) return;
 
-        for (const listener of this._listeners.get(event)) {
-            listener[0].postMessage({event, value}, listener[1]);
+        for (const [callingWindow, callingOrigin] of this._listeners.get(event)) {
+            callingWindow.postMessage({event, value}, callingOrigin);
         }
     }
 }

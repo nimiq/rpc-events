@@ -6,6 +6,7 @@ export default class EventClient {
         client._rpcClient = await RPC.Client(targetWindow, 'EventRPCServer');
         return client;
     }
+
     /**
      * @param {string} [name
      */
