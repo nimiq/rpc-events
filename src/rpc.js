@@ -1,18 +1,20 @@
 import Util from './util.js';
 
 export default class RPC {
-    static async Client(targetWindow) {
+    static async Client(targetWindow, interfaceName) {
         return new Promise((resolve, reject) => {
             let connected = false;
 
             const interfaceListener = (message) => {
-                if (message.origin !== targetWindow.origin || message.data.status !== 'OK') return;
+                if (message.origin !== targetWindow.origin
+                    || message.data.status !== 'OK'
+                    || message.data.result.interfaceName !== interfaceName) return;
 
                 self.removeEventListener('message', interfaceListener);
 
                 connected = true;
 
-                resolve(new (RPC._Client(targetWindow, message.data.result))());
+                resolve(new (RPC._Client(targetWindow, message.data.result.interfaceDescription))());
             };
 
             self.addEventListener('message', interfaceListener);
@@ -20,7 +22,7 @@ export default class RPC {
             const tryToConnect = () => {
                 if (connected) return;
 
-                targetWindow.postMessage({ command: 'getInterface', id: 0 }, targetWindow.origin);
+                targetWindow.postMessage({ command: 'getInterface', args: [interfaceName], id: 0 }, targetWindow.origin);
                 setTimeout(tryToConnect, 2000);
             }
 
@@ -115,12 +117,10 @@ export default class RPC {
 
             _receive(message) {
                 try {
-                    let args = [];
-                    if (message.data.command !== 'getInterface') {
-                        // inject calling window and origin to function args
-                        const { source: callingWindow, origin: callingOrigin } = message;
-                        args = [...message.data.args, callingWindow, callingOrigin];
-                    }
+                    // inject calling window and origin to function args
+                    const { source: callingWindow, origin: callingOrigin } = message;
+                    let args = message.data.args || [];
+                    args = [...args, callingWindow, callingOrigin];
 
                     const result = this._invoke(message.data.command, args);
 
@@ -146,7 +146,7 @@ export default class RPC {
         }
 
         Server.prototype['getInterface'] = function() {
-           return Server.prototype._funcNames;
+           return { interfaceName: Server.prototype.__proto__.constructor.name, interfaceDescription: Server.prototype._funcNames };
         }
 
         Server.prototype._funcNames.push('getInterface');

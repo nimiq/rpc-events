@@ -24,6 +24,7 @@
             const eventServer = new EventServer();
 
             setInterval(() => eventServer.fire('test', 23), 2000);
+            setInterval(() => eventServer.fire('water', 5), 3000);
         })();
     </script>
 </body>

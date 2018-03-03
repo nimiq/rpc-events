@@ -7,7 +7,7 @@ export default class EventServer {
     constructor() {
         this._listeners = new Map();
         const that = this;
-        RPC.Server(class {
+        RPC.Server(class EventRPCServer {
             on(event, callingWindow, callingOrigin) {
                 if (!that._listeners.get(event)) {
                     that._listeners.set(event, new Map());
