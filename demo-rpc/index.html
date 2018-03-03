@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Boruca Messaging Demo</title>
+</head>
+<body>
+<h1>Top Frame</h1>
+<iframe src="./iframe.html"></iframe>
+
+<script type="module">
+    import RPC from '../src/rpc.js';
+
+        (async function () {
+            const $iframe = document.querySelector('iframe');
+            const targetWindow = $iframe.contentWindow;
+
+            const rpcClient = new (await RPC.Client(targetWindow, self))();
+
+            console.log(await rpcClient.echo("I'm sending this from the top window!"));
+            console.log(await rpcClient.decrease(100));
+        })();
+    </script>
+</body>
+</html>

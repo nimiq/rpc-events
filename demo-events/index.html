@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Boruca Messaging Demo</title>
+</head>
+<body>
+<h1>Top Frame</h1>
+<iframe src="./iframe.html"></iframe>
+
+<script type="module">
+    import RPC from '../src/rpc.js';
+    import EventClient from '../src/event-client.js';
+
+        (async function () {
+            const $iframe = document.querySelector('iframe');
+            const targetWindow = $iframe.contentWindow;
+
+            const eventClient = await EventClient.create(targetWindow);
+
+            eventClient.on('test', (value) => console.log(`test received: ${value}`));
+        })();
+    </script>
+</body>
+</html>

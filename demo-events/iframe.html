@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Boruca Messaging Demo</title>
+</head>
+<body>
+<h1>IFrame</h1>
+<script type="module">
+    import RPC from '../src/rpc.js';
+    import EventServer from '../src/event-server.js';
+
+        (async function () {
+            const targetWindow = window.parent;
+            const targetOrigin = window.location.origin;
+
+            // Overwrite console functions to output to the top window console instead (for debugging)
+            ['log', 'info', 'warn', 'error'].forEach(fn => {
+                console[fn] = function() {
+                    const args = Array.from(arguments);
+                    args.unshift('IFRAME:');
+                    window.top.console[fn].apply(window.top.console, args);
+                }
+            });
+
+            const eventServer = new EventServer();
+
+            setTimeout(() => eventServer.fire('test', 23), 2000);
+        })();
+    </script>
+</body>
+</html>
