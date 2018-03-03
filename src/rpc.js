@@ -20,8 +20,8 @@ export default class RPC {
             const tryToConnect = () => {
                 if (connected) return;
 
-                targetWindow.postMessage({ command: 'getInterface', id: 0 }, targetWindow.origin);
-                setTimeout(tryToConnect, 2000);
+                targetWindow.postMessage({ command: 'getRpcInterface', id: 0 }, targetWindow.origin);
+                setTimeout(tryToConnect, 1000);
             }
 
             setTimeout(tryToConnect, 100);
@@ -47,8 +47,8 @@ export default class RPC {
             }
 
             _receive(message) {
-                // Discard all messages from unwanted origins or which are not answers
-                if (message.origin !== this._targetWindow.origin) return;
+                // Discard all messages from unwanted origins or which are not replies
+                if (message.origin !== this._targetWindow.origin || !message.data.status) return;
 
                 const callback = this._waiting.get(message.data.id);
 
@@ -73,8 +73,8 @@ export default class RPC {
              */
             _invoke(command, args = []) {
                 return new Promise((resolve, error) => {
-                    const obj = {command: command, args: args, id: Util.getRandomId()};
-                    this._waiting.set(obj.id, {resolve, error});
+                    const obj = { command: command, args: args, id: Util.getRandomId() };
+                    this._waiting.set(obj.id, { resolve, error });
                     this._targetWindow.postMessage(obj, targetWindow.origin);
                 });
             }
@@ -109,14 +109,14 @@ export default class RPC {
                 self.removeEventListener('message', this._receive.bind(this));
             }
 
-            _result(message, status, result) {
-                message.source.postMessage({status, result, id: message.data.id}, message.origin);
+            _replyTo(message, status, result) {
+                message.source.postMessage({ status, result, id: message.data.id }, message.origin);
             }
 
             _receive(message) {
                 try {
                     let args = [];
-                    if (message.data.command !== 'getInterface') {
+                    if (message.data.command !== 'getRpcInterface') {
                         // inject calling window and origin to function args
                         const { source: callingWindow, origin: callingOrigin } = message;
                         args = [...message.data.args, callingWindow, callingOrigin];
@@ -125,12 +125,12 @@ export default class RPC {
                     const result = this._invoke(message.data.command, args);
 
                     if (result instanceof Promise) {
-                        result.then((finalRes) => { this._result(message, 'OK', finalRes); });
+                        result.then((finalRes) => { this._replyTo(message, 'OK', finalRes); });
                     } else {
-                        this._result(message, 'OK', result);
+                        this._replyTo(message, 'OK', result);
                     }
                 } catch (e) {
-                    this._result(message, 'error', e.message || e);
+                    this._replyTo(message, 'error', e.message || e);
                 }
             }
 
@@ -139,17 +139,17 @@ export default class RPC {
             }
         };
 
-        Server.prototype._funcNames = [];
-
-        for (const funcName of Util.userFunctions(clazz.prototype)) {
-            Server.prototype._funcNames.push(funcName);
+        // Collect function names of the Server's interface
+        Server.prototype._rpcInterface = [];
+        for (const functionName of Util.userFunctions(clazz.prototype)) {
+            Server.prototype._rpcInterface.push(functionName);
         }
+        Server.prototype._rpcInterface.push('getRpcInterface');
 
-        Server.prototype['getInterface'] = function() {
-           return Server.prototype._funcNames;
+        // Add function to retrieve the interface
+        Server.prototype['getRpcInterface'] = function() {
+           return Server.prototype._rpcInterface;
         }
-
-        Server.prototype._funcNames.push('getInterface');
 
         return Server;
     }
