@@ -1,12 +1,12 @@
 import Util from './util.js';
 
 export default class RPC {
-    static async Client(targetWindow, interfaceName) {
+    static async Client(targetWindow, interfaceName, targetOrigin = '*') {
         return new Promise((resolve, reject) => {
             let connected = false;
 
             const interfaceListener = (message) => {
-                if (message.origin !== targetWindow.origin
+                if (message.source !== targetWindow
                     || message.data.status !== 'OK'
                     || message.data.interfaceName !== interfaceName) return;
 
@@ -22,7 +22,11 @@ export default class RPC {
             const tryToConnect = () => {
                 if (connected) return;
 
-                targetWindow.postMessage({ command: 'getRpcInterface', interfaceName, id: 0 }, targetWindow.origin);
+                try {
+                    targetWindow.postMessage({ command: 'getRpcInterface', interfaceName, id: 0 }, targetOrigin);
+                } catch (e){
+                    console.log('postMessage failed:' + e);
+                }
                 setTimeout(tryToConnect, 1000);
             }
 
@@ -49,10 +53,10 @@ export default class RPC {
             }
 
             _receive(message) {
-                // Discard all messages from unwanted origins
+                // Discard all messages from unwanted sources
                 // or which are not replies
                 // or which are not from the correct interface
-                if (message.origin !== this._targetWindow.origin
+                if (message.source !== this._targetWindow
                     || !message.data.status
                     || message.data.interfaceName !== interfaceName) return;
 
@@ -81,7 +85,8 @@ export default class RPC {
                 return new Promise((resolve, error) => {
                     const obj = { command, interfaceName, args, id: Util.getRandomId() };
                     this._waiting.set(obj.id, { resolve, error });
-                    this._targetWindow.postMessage(obj, targetWindow.origin);
+                    this._targetWindow.postMessage(obj, '*');
+                    setTimeout(() => error('request timeout'), 10000);
                 });
             }
         };
@@ -160,3 +165,5 @@ export default class RPC {
         return Server;
     }
 }
+
+// TODO: Handle unload/load events (how?)
