@@ -1,6 +1,10 @@
 import RPC from './rpc.js';
 
 export default class EventClient {
+    /**
+     * @param {Window} targetWindow
+     * @returns {object}
+     */
     static async create(targetWindow) {
         const client = new EventClient(targetWindow);
         client._rpcClient = await RPC.Client(targetWindow, 'EventRPCServer');

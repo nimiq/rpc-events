@@ -1,9 +1,6 @@
 import RPC from './rpc.js';
 
 export default class EventServer {
-    /**
-     * @param {string} [name
-     */
     constructor() {
         this._listeners = new Map();
         const that = this;

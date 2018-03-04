@@ -1,6 +1,12 @@
 import Util from './util.js';
 
 export default class RPC {
+    /**
+     * @param {Window} targetWindow
+     * @param {string} interfaceName
+     * @param {string} [targetOrigin]
+     * @returns {Promise}
+     */
     static async Client(targetWindow, interfaceName, targetOrigin = '*') {
         return new Promise((resolve, reject) => {
             let connected = false;
@@ -36,11 +42,16 @@ export default class RPC {
         });
     }
 
+    
+    /**
+     * @param {Window} targetWindow
+     * @param {string} interfaceName
+     * @param {array} funcNames
+     * @returns {Class}
+     * @private
+     */
     static _Client(targetWindow, interfaceName, funcNames) {
         const Client = class {
-            /**
-             * @param {string} [name
-             */
             constructor() {
                 this._targetWindow = targetWindow;
                 /** @type {Map.<number,{resolve:Function,error:Function}>} */
@@ -100,14 +111,19 @@ export default class RPC {
         return Client;
     }
 
+    /**
+     * @param {Class} clazz
+     * @returns {object}
+     */
     static Server(clazz) {
         return new (RPC._Server(clazz))();
     }
 
     /**
-     * @param {object} clazz
+     * @param {Class} clazz
      * @return {T extends clazz}
      * @constructor
+     * @private
      */
     static _Server(clazz) {
         const Server = class extends clazz {
