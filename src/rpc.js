@@ -112,20 +112,15 @@ export default class RPC {
     }
 
     /**
-     * @param {Class} clazz
-     * @returns {object}
+     * @param {Class} clazz: The class whose methods will be made available via postMessage RPC
+     * @param {boolean} useAccessControl: If set, message.source and message.origin will be passed as first two arguments to each method.
+     * @return {T extends clazz}
      */
-    static Server(clazz) {
-        return new (RPC._Server(clazz))();
+    static Server(clazz, accessControl) {
+        return new (RPC._Server(clazz, accessControl))();
     }
 
-    /**
-     * @param {Class} clazz
-     * @return {T extends clazz}
-     * @constructor
-     * @private
-     */
-    static _Server(clazz) {
+    static _Server(clazz, useAccessControl) {
         const Server = class extends clazz {
             constructor() {
                 super();
@@ -145,9 +140,23 @@ export default class RPC {
                 try {
                     if (message.data.interfaceName !== this._name) return;
 
+                    // test if request calls an existing method with the right number of arguments
+                    const calledMethod = this[message.data.command];
+                    const passedArgs = message.data.args || [];
+
+                    if (!calledMethod) {
+                        console.log(`non-existing method ${message.data.command} called: ${message}`);
+                        return;
+                    }
+
+                    if (calledMethod.length < passedArgs.length) {
+                        console.log(`too many arguments passed: ${message}`);
+                        return;
+                    }
+
                     // Inject calling window and origin to function args
                     const { source: callingWindow, origin: callingOrigin } = message;
-                    const args = [...(message.data.args || []), callingWindow, callingOrigin];
+                    const args = useAccessControl? [callingWindow, callingOrigin, ...passedArgs] : passedArgs;
 
                     const result = this._invoke(message.data.command, args);
 
