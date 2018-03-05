@@ -53,8 +53,13 @@ export default class RPC {
     static _Client(targetWindow, interfaceName, funcNames) {
         const Client = class {
             constructor() {
+                this.availableMethods = funcNames;
+                // Svub: Code smell that _targetWindow and _waiting are visible outside. Todo later!
+                /** @private
+                 *  @type {Window} */
                 this._targetWindow = targetWindow;
-                /** @type {Map.<number,{resolve:Function,error:Function}>} */
+                /** @private
+                 *  @type {Map.<number,{resolve:Function,error:Function}>} */
                 this._waiting = new Map();
                 self.addEventListener('message', this._receive.bind(this));
             }
