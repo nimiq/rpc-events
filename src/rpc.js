@@ -142,7 +142,7 @@ export default class RPC {
 
                     let args = message.data.args || [];
 
-                    if (useAccessControl) {
+                    if (useAccessControl && message.data.command !== 'getRpcInterface') {
                         // Inject calling window and origin to function args
                         const { source: callingWindow, origin: callingOrigin } = message;
                         args = [callingWindow, callingOrigin, ...args];
