@@ -149,10 +149,8 @@ export default class RPC {
                     }
 
                     // Test if request calls an existing method with the right number of arguments
-                    let calledMethod;
-                    try {
-                        calledMethod = Object.getOwnPropertyDescriptor(this.__proto__, message.data.command).value;
-                    } catch(e) {
+                    const calledMethod = this[message.data.command];
+                    if(!calledMethod) {
                         console.warn(`Non-existing method ${message.data.command} called: ${message}`);
                         return;
                     }

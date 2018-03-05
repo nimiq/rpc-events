@@ -5,14 +5,14 @@ export default class EventServer {
         this._listeners = new Map();
         const that = this;
         RPC.Server(class EventRPCServer {
-            on(event, callingWindow, callingOrigin) {
+            on(callingWindow, callingOrigin, event) {
                 if (!that._listeners.get(event)) {
                     that._listeners.set(event, new Map());
                 }
                 that._listeners.get(event).set(callingWindow, callingOrigin);
             }
 
-            off(event, callingWindow, callingOrigin) {
+            off(callingWindow, callingOrigin, event) {
                 const eventEntry = that._listeners.get(event)
                 if (eventEntry.get(callingWindow) !== callingOrigin) return;
 
@@ -21,7 +21,7 @@ export default class EventServer {
                     that._listeners.delete(event);
                 }
             }
-        });
+        }, true);
     }
 
     fire(event, value) {
