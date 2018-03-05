@@ -140,17 +140,18 @@ export default class RPC {
                 try {
                     if (message.data.interfaceName !== this._name) return;
 
-                    // test if request calls an existing method with the right number of arguments
-                    const calledMethod = this[message.data.command];
-                    const passedArgs = message.data.args || [];
-
-                    if (!calledMethod) {
-                        console.log(`non-existing method ${message.data.command} called: ${message}`);
+                    // Test if request calls an existing method with the right number of arguments
+                    let calledMethod;
+                    try {
+                        calledMethod = Object.getOwnPropertyDescriptor(this.__proto__, message.data.command).value;
+                    } catch(e) {
+                        console.log(`Non-existing method ${message.data.command} called: ${message}`);
                         return;
                     }
 
+                    const passedArgs = message.data.args || [];
                     if (calledMethod.length < passedArgs.length) {
-                        console.log(`too many arguments passed: ${message}`);
+                        console.log(`Too many arguments passed: ${message}`);
                         return;
                     }
 
