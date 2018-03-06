@@ -1,4 +1,5 @@
-import Util from './util.js';
+import Reflection from '/libraries/nimiq-utils/reflection/reflection.js';
+import Random from './random.js';
 
 export default class RPC {
     /**
@@ -46,14 +47,14 @@ export default class RPC {
     /**
      * @param {Window} targetWindow
      * @param {string} interfaceName
-     * @param {array} funcNames
+     * @param {array} functionNames
      * @returns {Class}
      * @private
      */
-    static _Client(targetWindow, interfaceName, funcNames) {
+    static _Client(targetWindow, interfaceName, functionNames) {
         const Client = class {
             constructor() {
-                this.availableMethods = funcNames;
+                this.availableMethods = functionNames;
                 // Svub: Code smell that _targetWindow and _waiting are visible outside. Todo later!
                 /** @private
                  *  @type {Window} */
@@ -99,7 +100,7 @@ export default class RPC {
              */
             _invoke(command, args = []) {
                 return new Promise((resolve, error) => {
-                    const obj = { command, interfaceName, args, id: Util.getRandomId() };
+                    const obj = { command, interfaceName, args, id: Random.getRandomId() };
                     this._waiting.set(obj.id, { resolve, error });
                     this._targetWindow.postMessage(obj, '*');
                     setTimeout(() => error('request timeout'), 10000);
@@ -107,9 +108,9 @@ export default class RPC {
             }
         };
 
-        for (const funcName of funcNames) {
-            Client.prototype[funcName] = function (...args) {
-                return this._invoke(funcName, args);
+        for (const functionName of functionNames) {
+            Client.prototype[functionName] = function (...args) {
+                return this._invoke(functionName, args);
             };
         }
 
@@ -168,7 +169,7 @@ export default class RPC {
                     const result = this._invoke(message.data.command, args);
 
                     if (result instanceof Promise) {
-                        result.then((finalRes) => { this._replyTo(message, 'OK', finalRes); });
+                        result.then((finalResult) => { this._replyTo(message, 'OK', finalResult); });
                     } else {
                         this._replyTo(message, 'OK', result);
                     }
@@ -184,7 +185,7 @@ export default class RPC {
 
         // Collect function names of the Server's interface
         Server.prototype._rpcInterface = [];
-        for (const functionName of Util.userFunctions(clazz.prototype)) {
+        for (const functionName of Reflection.userFunctions(clazz.prototype)) {
             Server.prototype._rpcInterface.push(functionName);
         }
         Server.prototype._rpcInterface.push('getRpcInterface');
