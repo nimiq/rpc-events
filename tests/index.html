@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Boruca Messaging Demo</title>
+    <link rel="stylesheet" href="tests.css">
+    <script src="tests.js"></script>
+</head>
+<body>
+    <h1>Boruca Tests</h1>
+    <iframe class="rpc" src="iframe-rpc.html"></iframe>
+    <iframe class="events" src="iframe-events.html"></iframe>
+
+    <script type="module">
+        import {RPC, EventClient} from '../src/boruca.js';
+
+        (async function () {
+            const rpcTargetWindow = document.querySelector('iframe.rpc').contentWindow;
+            const eventsTargetWindow = document.querySelector('iframe.events').contentWindow;
+
+            let result;
+
+            // R P C
+
+            const rpcClient = await RPC.Client(rpcTargetWindow, 'IFrameClass');
+
+            // Test 1
+            result = await rpcClient.echo("I'm sending this from the top window!");
+            testResult('RPC.Client can call first function', result, "IFrame Echo: I'm sending this from the top window!");
+
+            // test 2
+            result = await rpcClient.decrease(100);
+            testResult('RPC.Client can call second function', result, 99);
+
+            // Test 3
+            result = await rpcClient.tellAStory();
+            testResult('RPC.Client can call inherited function', result, 'Es war einmal...');
+
+            // Test 4
+            result = await rpcClient.counter;
+            testResult('RPC.Client can get a getter', result, 1);
+
+            // Test 5
+            await (rpcClient.counter = 4);
+            result = await rpcClient.counter;
+            testResult('RPC.Client can set a setter', result, 5);
+
+
+            // E V E N T S
+
+            const eventClient = await EventClient.create(eventsTargetWindow);
+
+            const offWorksTimeout = setTimeout(() => testResult('EventClient can remove listener', true, true), 400);
+
+            function test1(value) {
+                if (value === 2) testResult('EventClient can receive fired event', value, 2);
+                if (value === 8) {
+                    testResult('EventClient can remove listener', false, true);
+                    clearTimeout(offWorksTimeout);
+                }
+                eventClient.off('test1', boundTest1);
+            }
+
+            const boundTest1 = test1.bind(self);
+
+            eventClient.on('test1', boundTest1);
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <script type="module">
+        import { EventServer } from '../src/boruca.js';
+
+        (async function () {
+            const eventServer = new EventServer();
+
+            eventServer.onConnected = () => {
+                setTimeout(() => eventServer.fire('test1', 2), 200);
+                setTimeout(() => eventServer.fire('test1', 8), 300);
+            };
+        })();
+    </script>
+</body>
+</html>

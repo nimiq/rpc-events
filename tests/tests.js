@@ -21,7 +21,7 @@ function testResult(description, result, expected) {
     label.textContent = description
 
     const span = document.createElement('span')
-    span.textContent = result
+    span.textContent = `${result}`
 
     div.appendChild(label)
     div.appendChild(span)
