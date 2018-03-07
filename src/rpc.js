@@ -190,6 +190,7 @@ export default class RPC {
 
         // Add function to retrieve the interface
         Server.prototype['getRpcInterface'] = function() {
+            if(this.onConnected) this.onConnected.call(this);
             return Server.prototype._rpcInterface;
         }
 

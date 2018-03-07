@@ -21,6 +21,10 @@ export default class EventServer {
                     that._listeners.delete(event);
                 }
             }
+
+            onConnected() {
+                that.onConnected();
+            }
         }, true);
     }
 
@@ -31,4 +35,6 @@ export default class EventServer {
             callingWindow.postMessage({event, value}, callingOrigin);
         }
     }
+
+    onConnected() { }
 }
