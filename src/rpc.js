@@ -156,14 +156,12 @@ export default class RPC {
 
                     // Test if request calls an existing method with the right number of arguments
                     const calledMethod = this[message.data.command];
-                    if(!calledMethod) {
-                        console.warn(`Non-existing method ${message.data.command} called: ${message}`);
-                        return;
+                    if (!calledMethod) {
+                        throw `Non-existing method ${message.data.command} called: ${message}`;
                     }
 
                     if (calledMethod.length < args.length) {
-                        console.warn(`Too many arguments passed: ${message}`);
-                        return;
+                        throw `Too many arguments passed: ${message}`;
                     }
 
                     const result = this._invoke(message.data.command, args);
