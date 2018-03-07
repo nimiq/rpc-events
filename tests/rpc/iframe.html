@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <script type="module">
+        import {RPC} from '../../src/boruca.js';
+
+        (async function () {
+            class Grandpa {
+                tellAStory() {
+                    return 'Vor langer Zeit...';
+                }
+            }
+
+            class IFrameClass extends Grandpa {
+                constructor() {
+                    super();
+                    this._counter = 0;
+                }
+
+                decrease(number) {
+                    return number - 1;
+                }
+
+                echo(message) {
+                    return 'IFrame Echo: ' + message;
+                }
+
+                get counter() {
+                    this._counter++;
+                    return this._counter;
+                }
+
+                set counter(value) {
+                    this._counter = parseInt(value);
+                }
+            }
+
+            RPC.Server(IFrameClass);
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Boruca Messaging Demo</title>
+    <link rel="stylesheet" href="../test.css">
+    <script src="../test.js"></script>
+</head>
+<body>
+    <h1>RPC Class Tests</h1>
+    <iframe src="./iframe.html"></iframe>
+
+    <script type="module">
+        import {RPC} from '../../src/boruca.js';
+
+        (async function () {
+            const targetWindow = document.querySelector('iframe').contentWindow;
+
+            const rpcClient = await RPC.Client(targetWindow, 'IFrameClass');
+
+            let result;
+
+            // Test 1
+            result = await rpcClient.echo("I'm sending this from the top window!");
+            testResult('RPC.Client can call first function', result, "IFrame Echo: I'm sending this from the top window!");
+
+            // test 2
+            result = await rpcClient.decrease(100);
+            testResult('RPC.Client can call second function', result, 99);
+
+            // Test 3
+            result = await rpcClient.tellAStory();
+            testResult('RPC.Client can call inherited function', result, "Vor langer Zeit...");
+
+            // Test 4
+            result = await rpcClient.counter;
+            testResult('RPC.Client can get a getter', result, 1);
+
+            // Test 5
+            await (rpcClient.counter = 4);
+            result = await rpcClient.counter;
+            testResult('RPC.Client can set a setter', result, 5);
+        })();
+    </script>
+</body>
+</html>
