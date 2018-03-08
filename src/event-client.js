@@ -5,21 +5,22 @@ export default class EventClient {
      * @param {Window} targetWindow
      * @returns {object}
      */
-    static async create(targetWindow) {
-        const client = new EventClient(targetWindow);
-        client._rpcClient = await RPC.Client(targetWindow, 'EventRPCServer');
+    static async create(targetWindow, targetOrigin = '*') {
+        const client = new EventClient(targetWindow, targetOrigin);
+        client._rpcClient = await RPC.Client(targetWindow, 'EventRPCServer', targetOrigin);
         return client;
     }
 
-    constructor(targetWindow) {
+    constructor(targetWindow, targetOrigin) {
         this._listeners = new Map();
         this._targetWindow = targetWindow;
+        this._targetOrigin = targetOrigin;
         self.addEventListener('message', this._receive.bind(this));
     }
 
     _receive({origin, data: {event, value}}) {
         // Discard all messages from unwanted origins or which are not events
-        if (origin !== this._targetWindow.origin || !event) return;
+        if (origin !== this._targetOrigin || !event) return;
 
         if (!this._listeners.get(event)) return;
 
