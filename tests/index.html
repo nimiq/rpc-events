@@ -44,6 +44,19 @@
             result = await rpcClient.counter;
             testResult('RPC.Client can set a setter', result, 5);
 
+            // Test 6
+            try {
+                await rpcClient.complain();
+            } catch(e) {
+                testResult('RPC.Client can detect failed methods.', e, 'Complain...');
+            }
+
+            // Test 7
+            try {
+                await rpcClient.wakeUp();
+            } catch(e) {
+                testResult('RPC.Client can detect async failed methods.', e, 'Still sleeping...');
+            }
 
             // E V E N T S
 

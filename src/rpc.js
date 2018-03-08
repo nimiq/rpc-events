@@ -26,6 +26,7 @@ export default class RPC {
 
             self.addEventListener('message', interfaceListener);
 
+            let connectTimer;
             const tryToConnect = () => {
                 if (connected) return;
 
@@ -34,12 +35,15 @@ export default class RPC {
                 } catch (e){
                     console.log('postMessage failed:' + e);
                 }
-                setTimeout(tryToConnect, 1000);
-            }
+                connectTimer = setTimeout(tryToConnect, 1000);
+            };
 
-            setTimeout(tryToConnect, 100);
+            connectTimer = setTimeout(tryToConnect, 100);
 
-            setTimeout(() => reject('Connection timeout'), 10000);
+            setTimeout(() => {
+                reject('Connection timeout');
+                clearTimeout(connectTimer);
+            }, 10000);
         });
     }
 
@@ -167,7 +171,9 @@ export default class RPC {
                     const result = this._invoke(message.data.command, args);
 
                     if (result instanceof Promise) {
-                        result.then((finalResult) => { this._replyTo(message, 'OK', finalResult); });
+                        result
+                            .then((finalResult) => this._replyTo(message, 'OK', finalResult))
+                            .catch(e => this._replyTo(message, 'error', e.message || e));
                     } else {
                         this._replyTo(message, 'OK', result);
                     }
@@ -192,7 +198,7 @@ export default class RPC {
         Server.prototype['getRpcInterface'] = function() {
             if(this.onConnected) this.onConnected.call(this);
             return Server.prototype._rpcInterface;
-        }
+        };
 
         return Server;
     }
