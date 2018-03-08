@@ -21,7 +21,7 @@ export default class RPC {
 
                 connected = true;
 
-                resolve(new (RPC._Client(targetWindow, interfaceName, message.data.result))());
+                resolve( new (RPC._Client(targetWindow, interfaceName, message.data.result))() );
             };
 
             self.addEventListener('message', interfaceListener);

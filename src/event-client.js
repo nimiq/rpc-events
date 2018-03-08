@@ -3,6 +3,7 @@ import RPC from './rpc.js';
 export default class EventClient {
     /**
      * @param {Window} targetWindow
+     * @param {string} [targetOrigin]
      * @returns {object}
      */
     static async create(targetWindow, targetOrigin = '*') {
