@@ -153,9 +153,8 @@ export default class RPC {
                     let args = message.data.args || [];
 
                     if (useAccessControl && message.data.command !== 'getRpcInterface') {
-                        // Inject calling window and origin to function args
-                        const { source: callingWindow, origin: callingOrigin } = message;
-                        args = [callingWindow, callingOrigin, ...args];
+                        // Inject calling origin to function args
+                        args = [message.origin, ...args];
                     }
 
                     // Test if request calls an existing method with the right number of arguments
