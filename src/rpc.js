@@ -1,5 +1,5 @@
 import Reflection from '/libraries/nimiq-utils/reflection/reflection.js';
-import Random from './random.js';
+import Random from '/libraries/nimiq-utils/random.js';
 
 export default class RPC {
     /**
@@ -47,7 +47,7 @@ export default class RPC {
         });
     }
 
-    
+
     /**
      * @param {Window} targetWindow
      * @param {string} interfaceName
