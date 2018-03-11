@@ -157,6 +157,7 @@ export default class RPC {
                         args = [message.origin, ...args];
                     }
 
+                    /* deactivate this since there is no security issue and by wrapping in acl length info gets lost
                     // Test if request calls an existing method with the right number of arguments
                     const calledMethod = this[message.data.command];
                     if (!calledMethod) {
@@ -165,7 +166,7 @@ export default class RPC {
 
                     if (calledMethod.length < args.length) {
                         throw `Too many arguments passed: ${message}`;
-                    }
+                    }*/
 
                     const result = this._invoke(message.data.command, args);
 
