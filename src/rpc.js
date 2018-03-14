@@ -41,7 +41,7 @@ export default class RPC {
             connectTimer = setTimeout(tryToConnect, 100);
 
             setTimeout(() => {
-                reject('Connection timeout');
+                reject(new Error('Connection timeout'));
                 clearTimeout(connectTimer);
             }, 10000);
         });
@@ -111,7 +111,9 @@ export default class RPC {
                     const obj = { command, interfaceName, args, id: Random.getRandomId() };
                     this._waiting.set(obj.id, { resolve, error });
                     this._targetWindow.postMessage(obj, '*');
-                    setTimeout(() => error('request timeout'), 10000);
+                    // no timeout for now, as some actions require user interactions
+                    // todo maybe set timeout via parameter?
+                    //setTimeout(() => error(new Error ('request timeout')), 10000);
                 });
             }
         };
