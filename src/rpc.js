@@ -73,25 +73,29 @@ export default class RPC {
                 self.removeEventListener('message', this._receive.bind(this));
             }
 
-            _receive(message) {
+            _receive({ source, data }) {
                 // Discard all messages from unwanted sources
                 // or which are not replies
                 // or which are not from the correct interface
-                if (message.source !== this._targetWindow
-                    || !message.data.status
-                    || message.data.interfaceName !== interfaceName) return;
+                if (source !== this._targetWindow
+                    || !data.status
+                    || data.interfaceName !== interfaceName) return;
 
-                const callback = this._waiting.get(message.data.id);
+                const callback = this._waiting.get(data.id);
 
                 if (!callback) {
-                    console.log('Unknown reply', message.data);
+                    console.log('Unknown reply', data);
                 } else {
-                    this._waiting.delete(message.data.id);
+                    this._waiting.delete(data.id);
 
-                    if (message.data.status === 'OK') {
-                        callback.resolve(message.data.result);
-                    } else if (message.data.status === 'error') {
-                        callback.error(message.data.result);
+                    if (data.status === 'OK') {
+                        callback.resolve(data.result);
+                    } else if (data.status === 'error') {
+                        const { message, stack, code } = data.result;
+                        const error = new Error(message);
+                        error.code = code;
+                        error.stack = stack;
+                        callback.error(error);
                     }
                 }
             }
@@ -173,12 +177,14 @@ export default class RPC {
                     if (result instanceof Promise) {
                         result
                             .then((finalResult) => this._replyTo(message, 'OK', finalResult))
-                            .catch(e => this._replyTo(message, 'error', e.message || e));
+                            // Todo remove stack trace for production
+                            .catch(e => this._replyTo(message, 'error', { message: e.message, stack: e.stack, code: e.code }));
                     } else {
                         this._replyTo(message, 'OK', result);
                     }
                 } catch (e) {
-                    this._replyTo(message, 'error', e.message || e);
+                    // Todo remove stack trace for production
+                    this._replyTo(message, 'error', { message: e.message, stack: e.stack, code: e.code });
                 }
             }
 
