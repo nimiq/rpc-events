@@ -179,14 +179,14 @@ export default class RPC {
                     if (result instanceof Promise) {
                         result
                             .then((finalResult) => this._replyTo(message, 'OK', finalResult))
-                            // Todo remove stack trace for production
-                            .catch(e => this._replyTo(message, 'error', { message: e.message, stack: e.stack, code: e.code }));
+                            .catch(e => this._replyTo(message, 'error',
+                                e.message ? { message: e.message, stack: e.stack, code: e.code } : { message: e } ));
                     } else {
                         this._replyTo(message, 'OK', result);
                     }
                 } catch (e) {
-                    // Todo remove stack trace for production
-                    this._replyTo(message, 'error', { message: e.message, stack: e.stack, code: e.code });
+                    this._replyTo(message, 'error',
+                        e.message ? { message: e.message, stack: e.stack, code: e.code } : { message: e } );
                 }
             }
 

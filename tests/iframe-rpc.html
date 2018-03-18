@@ -11,11 +11,19 @@
                 }
 
                 complain() {
-                    throw 'Complain...';
+                    throw new Error('Complain...');
+                }
+
+                plainComplain() {
+                    throw 'knife';
+                }
+
+                async asyncPlainComplain() {
+                    throw 'knife';
                 }
 
                 async wakeUp() {
-                    throw 'Still sleeping...';
+                    throw new Error('Still sleeping...');
                 }
             }
 

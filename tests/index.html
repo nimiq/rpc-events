@@ -48,14 +48,28 @@
             try {
                 await rpcClient.complain();
             } catch(e) {
-                testResult('RPC.Client can detect failed methods.', e, 'Complain...');
+                testResult('RPC.Client can detect failed methods.', e.message, 'Complain...');
             }
 
             // Test 7
             try {
                 await rpcClient.wakeUp();
             } catch(e) {
-                testResult('RPC.Client can detect async failed methods.', e, 'Still sleeping...');
+                testResult('RPC.Client can detect async failed methods.', e.message, 'Still sleeping...');
+            }
+
+            // Test 8
+            try {
+                await rpcClient.plainComplain();
+            } catch(e) {
+                testResult('RPC.Client can detect plain exceptions', e.message, 'knife');
+            }
+
+            // Test 9
+            try {
+                await rpcClient.asyncPlainComplain();
+            } catch(e) {
+                testResult('RPC.Client can detect async plain exceptions', e.message, 'knife');
             }
 
             // E V E N T S
