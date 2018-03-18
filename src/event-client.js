@@ -21,7 +21,7 @@ export default class EventClient {
 
     _receive({origin, data: {event, value}}) {
         // Discard all messages from unwanted origins or which are not events
-        if (origin !== this._targetOrigin || !event) return;
+        if ((this._targetOrigin !== '*' && origin !== this._targetOrigin) || !event) return;
 
         if (!this._listeners.get(event)) return;
 

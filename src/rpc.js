@@ -15,13 +15,14 @@ export default class RPC {
             const interfaceListener = (message) => {
                 if (message.source !== targetWindow
                     || message.data.status !== 'OK'
-                    || message.data.interfaceName !== interfaceName) return;
+                    || message.data.interfaceName !== interfaceName
+                    || (targetOrigin !== '*' && message.origin !== targetOrigin)) return;
 
                 self.removeEventListener('message', interfaceListener);
 
                 connected = true;
 
-                resolve( new (RPC._Client(targetWindow, interfaceName, message.data.result))() );
+                resolve( new (RPC._Client(targetWindow, targetOrigin, interfaceName, message.data.result))() );
             };
 
             self.addEventListener('message', interfaceListener);
@@ -55,7 +56,7 @@ export default class RPC {
      * @returns {Class}
      * @private
      */
-    static _Client(targetWindow, interfaceName, functionNames) {
+    static _Client(targetWindow, targetOrigin, interfaceName, functionNames) {
         const Client = class {
             constructor() {
                 this.availableMethods = functionNames;
@@ -63,6 +64,7 @@ export default class RPC {
                 /** @private
                  *  @type {Window} */
                 this._targetWindow = targetWindow;
+                this._targetOrigin = targetOrigin;
                 /** @private
                  *  @type {Map.<number,{resolve:Function,error:Function}>} */
                 this._waiting = new Map();
@@ -73,13 +75,14 @@ export default class RPC {
                 self.removeEventListener('message', this._receive.bind(this));
             }
 
-            _receive({ source, data }) {
+            _receive({ source, origin, data }) {
                 // Discard all messages from unwanted sources
                 // or which are not replies
                 // or which are not from the correct interface
                 if (source !== this._targetWindow
                     || !data.status
-                    || data.interfaceName !== interfaceName) return;
+                    || data.interfaceName !== interfaceName
+                    || (this._targetOrigin !== '*' && origin !== this._targetOrigin)) return;
 
                 const callback = this._waiting.get(data.id);
 
