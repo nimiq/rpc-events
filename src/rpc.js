@@ -27,9 +27,18 @@ export default class RPC {
 
             self.addEventListener('message', interfaceListener);
 
+
             let connectTimer;
+            const timeoutTimer = setTimeout(() => {
+                reject(new Error('Connection timeout'));
+                clearTimeout(connectTimer);
+            }, 10000);
+
             const tryToConnect = () => {
-                if (connected) return;
+                if (connected) {
+                    clearTimeout(timeoutTimer);
+                    return;
+                }
 
                 try {
                     targetWindow.postMessage({ command: 'getRpcInterface', interfaceName, id: 0 }, targetOrigin);
@@ -40,11 +49,6 @@ export default class RPC {
             };
 
             connectTimer = setTimeout(tryToConnect, 100);
-
-            setTimeout(() => {
-                reject(new Error('Connection timeout'));
-                clearTimeout(connectTimer);
-            }, 10000);
         });
     }
 
