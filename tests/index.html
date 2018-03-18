@@ -76,10 +76,14 @@
 
             const eventClient = await EventClient.create(eventsTargetWindow);
 
+            const onWorksTimeout = setTimeout(() => testResult('EventClient can receive fired event', undefined, 2), 200);
             const offWorksTimeout = setTimeout(() => testResult('EventClient can remove listener', true, true), 400);
 
             function test1(value) {
-                if (value === 2) testResult('EventClient can receive fired event', value, 2);
+                if (value === 2) {
+                    testResult('EventClient can receive fired event', value, 2);
+                    clearTimeout(onWorksTimeout);
+                }
                 if (value === 8) {
                     testResult('EventClient can remove listener', false, true);
                     clearTimeout(offWorksTimeout);
