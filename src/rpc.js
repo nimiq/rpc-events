@@ -160,7 +160,7 @@ export default class RPC {
 
                     if (useAccessControl && message.data.command !== 'getRpcInterface') {
                         // Inject calling origin to function args
-                        args = [message.origin, ...args];
+                        args = [{ callingWindow: message.source, callingOrigin: message.origin }, ...args];
                     }
 
                     /* deactivate this since there is no security issue and by wrapping in acl length info gets lost
