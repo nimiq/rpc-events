@@ -1,5 +1,5 @@
-import Reflection from '/libraries/nimiq-utils/reflection/reflection.js';
-import Random from '/libraries/nimiq-utils/random.js';
+import Reflection from '/libraries/secure-utils/reflection/reflection.js';
+import Random from '/libraries/secure-utils/random/random.js';
 
 export default class RPC {
     /**
