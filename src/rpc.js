@@ -32,7 +32,7 @@ export default class RPC {
             const timeoutTimer = setTimeout(() => {
                 reject(new Error('Connection timeout'));
                 clearTimeout(connectTimer);
-            }, 10000);
+            }, 30000);
 
             const tryToConnect = () => {
                 if (connected) {
