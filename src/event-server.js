@@ -25,7 +25,7 @@ export default class EventServer {
             onConnected() {
                 that.onConnected();
             }
-        }, true);
+        }, true, ['on', 'off']);
     }
 
     fire(event, value) {

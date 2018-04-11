@@ -49,9 +49,23 @@
                 set counter(value) {
                     this._counter = parseInt(value);
                 }
+
+                privateFunction() {
+                    throw new Error('This is a private function!');
+                }
             }
 
-            RPC.Server(IFrameClass);
+            const rpcWhitelist = [
+                'tellAStory',
+                'complain',
+                'plainComplain',
+                'asyncPlainComplain',
+                'wakeUp',
+                'decrease',
+                'echo'
+            ];
+
+            RPC.Server(IFrameClass, false, rpcWhitelist);
         })();
     </script>
 </body>

@@ -14,7 +14,7 @@ function testResult(description, result, expected) {
     } else {
         div.style.color = 'red'
         description += ': '
-        console.log(result);
+        console.error('Unexpected result: ', result);
     }
 
     const label = document.createElement('label')

@@ -135,15 +135,16 @@ export default class RPC {
     }
 
     /**
-     * @param {Class} clazz: The class whose methods will be made available via postMessage RPC
-     * @param {boolean} useAccessControl: If set, message.source and message.origin will be passed as first two arguments to each method.
+     * @param {Class} clazz The class whose methods will be made available via postMessage RPC
+     * @param {boolean} [useAccessControl] If set, an object containing callingWindow and callingOrigin will be passed as first arguments to each method
+     * @param {string[]} [rpcInterface] A whitelist of function names that are made available by the server
      * @return {T extends clazz}
      */
-    static Server(clazz, useAccessControl) {
-        return new (RPC._Server(clazz, useAccessControl))();
+    static Server(clazz, useAccessControl, rpcInterface) {
+        return new (RPC._Server(clazz, useAccessControl, rpcInterface))();
     }
 
-    static _Server(clazz, useAccessControl) {
+    static _Server(clazz, useAccessControl, rpcInterface) {
         const Server = class extends clazz {
             constructor() {
                 super();
@@ -203,11 +204,18 @@ export default class RPC {
             }
         };
 
-        // Collect function names of the Server's interface
-        Server.prototype._rpcInterface = [];
-        for (const functionName of Reflection.userFunctions(clazz.prototype)) {
-            Server.prototype._rpcInterface.push(functionName);
+        if (rpcInterface !== undefined) {
+            Server.prototype._rpcInterface = rpcInterface;
+        } else {
+            console.warn('No function whitelist as third parameter to Server() found, public functions are automatically determined!');
+
+            // Collect function names of the Server's interface
+            Server.prototype._rpcInterface = [];
+            for (const functionName of Reflection.userFunctions(clazz.prototype)) {
+                Server.prototype._rpcInterface.push(functionName);
+            }
         }
+
         Server.prototype._rpcInterface.push('getRpcInterface');
 
         // Add function to retrieve the interface

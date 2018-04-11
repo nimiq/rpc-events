@@ -82,7 +82,24 @@
                 testResult('RPC.Server blocks unknown functions', e.message, 'Unknown command');
             }
 
-            testResult('Completed all RPC tests', getTestCount(), 10);
+            // Test 11
+            try {
+                await rpcClient.privateFunction();
+            } catch(e) {
+                testResult('RPC.Server only broadcasts whitelisted functions', e.message, 'rpcClient.privateFunction is not a function');
+            }
+
+            // Test 12
+            try {
+                rpcClient.privateFunction = function (...args) {
+                    return this._invoke('privateFunction', args);
+                };
+                await rpcClient.privateFunction();
+            } catch(e) {
+                testResult('RPC.Server blocks non-whitelisted functions', e.message, 'Unknown command');
+            }
+
+            testResult('Completed all RPC tests', getTestCount(), 12);
 
             // E V E N T S
 
