@@ -72,6 +72,18 @@
                 testResult('RPC.Client can detect async plain exceptions', e.message, 'knife');
             }
 
+            // Test 10
+            try {
+                rpcClient.unknownFunction = function (...args) {
+                    return this._invoke('unknownFunction', args);
+                };
+                await rpcClient.unknownFunction();
+            } catch(e) {
+                testResult('RPC.Server blocks unknown functions', e.message, 'Unknown command');
+            }
+
+            testResult('Completed all RPC tests', getTestCount(), 10);
+
             // E V E N T S
 
             const eventClient = await EventClient.create(eventsTargetWindow);

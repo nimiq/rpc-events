@@ -162,6 +162,7 @@ export default class RPC {
             _receive(message) {
                 try {
                     if (message.data.interfaceName !== this._name) return;
+                    if (!this._rpcInterface.includes(message.data.command)) throw new Error('Unknown command');
 
                     let args = message.data.args || [];
 

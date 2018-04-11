@@ -27,4 +27,11 @@ function testResult(description, result, expected) {
     div.appendChild(span)
 
     document.body.appendChild(div)
+
+    const counter = window.__testCounter || 0
+    window.__testCounter = counter + 1
+}
+
+function getTestCount() {
+    return window.__testCounter
 }
