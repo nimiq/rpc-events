@@ -72,11 +72,12 @@ export default class RPC {
                 /** @private
                  *  @type {Map.<number,{resolve:Function,error:Function}>} */
                 this._waiting = new Map();
-                self.addEventListener('message', this._receive.bind(this));
+                this._receive = this._receive.bind(this);
+                self.addEventListener('message', this._receive);
             }
 
             close() {
-                self.removeEventListener('message', this._receive.bind(this));
+                self.removeEventListener('message', this._receive);
             }
 
             _receive({ source, origin, data }) {
