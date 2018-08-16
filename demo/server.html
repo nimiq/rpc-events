@@ -1,0 +1,9 @@
+<script src="../node_modules/@nimiq/rpc/dist/rpc.umd.js"></script>
+<script src="../dist/boruca.umd.js"></script>
+<script>
+    const server = new Boruca.EventServer('*');
+
+    setInterval(() => {
+        server.fire('clock', Math.random());
+    }, 1000);
+</script>

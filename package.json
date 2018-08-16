@@ -1,0 +1,33 @@
+{
+  "name": "@nimiq/boruca-messaging",
+  "version": "0.0.1",
+  "description": "RPC Event Client/Server",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nimiq/boruca-messaging.git"
+  },
+  "main": "dist/boruca.common.js",
+  "module": "dist/boruca.umd.js",
+  "types": "types/index.d.ts",
+  "scripts": {
+    "typecheck": "tsc",
+    "lint": "tslint 'src/**/*.ts'",
+    "lint-fix": "tslint --fix 'src/**/*.ts'",
+    "build": "tsc && rollup -c"
+  },
+  "files": [
+    "dist",
+    "types"
+  ],
+  "author": "Nimiq",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "rollup": "^0.64.0",
+    "ts-loader": "^4.4.2",
+    "tslint": "^5.11.0",
+    "typescript": "^3.0.1"
+  },
+  "dependencies": {
+    "@nimiq/rpc": "^0.0.3"
+  }
+}
