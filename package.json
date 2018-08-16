@@ -28,6 +28,6 @@
     "typescript": "^3.0.1"
   },
   "dependencies": {
-    "@nimiq/rpc": "^0.0.3"
+    "@nimiq/rpc": "^0.0.4"
   }
 }

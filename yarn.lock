@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@nimiq/rpc@^0.0.3":
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/@nimiq/rpc/-/rpc-0.0.3.tgz#8f4f7e3d5ebbbb59a3bc120e37a1ec38b4e62e5a"
+"@nimiq/rpc@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@nimiq/rpc/-/rpc-0.0.4.tgz#961d476c7029c6917d8b4958394225f5e1b06afe"
 
 "@types/estree@0.0.39":
   version "0.0.39"
