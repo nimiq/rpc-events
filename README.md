@@ -1,9 +1,5 @@
-# Boruca
-### Transparent Cross-Window Remote Procedure Calling (RPC)
-
-> _Boruca_ is a native Costa Rican language (http://boruca.org/en/language)
-
-Boruca transparently handles calling classes across different `window` scopes. See tests for usage examples.
+# RPC Events
+### Transparent Cross-Window Remote Events
 
 
 

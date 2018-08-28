@@ -1,5 +1,5 @@
 {
-  "name": "@nimiq/boruca-messaging",
+  "name": "@nimiq/rpc-events",
   "version": "0.0.1",
   "description": "RPC Event Client/Server",
   "repository": {
