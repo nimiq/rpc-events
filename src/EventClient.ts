@@ -1,18 +1,18 @@
-import {PostMessageRpcClient} from "@nimiq/rpc";
+import {PostMessageRpcClient} from '@nimiq/rpc';
 
 export type EventCallback = (value: any) => void;
 
 export class EventClient {
-    private _listeners: Map<string, Set<EventCallback>>;
-    private readonly _targetWindow: Window;
-    private readonly _targetOrigin?: string;
-    private _rpcClient: PostMessageRpcClient;
-
-    static async create(targetWindow: Window, targetOrigin: string = '*') {
+    public static async create(targetWindow: Window, targetOrigin: string = '*') {
         const client = new EventClient(targetWindow, targetOrigin);
         await client._init();
         return client;
     }
+
+    private _listeners: Map<string, Set<EventCallback>>;
+    private readonly _targetWindow: Window;
+    private readonly _targetOrigin?: string;
+    private _rpcClient: PostMessageRpcClient;
 
     private constructor(targetWindow: Window, targetOrigin: string) {
         this._listeners = new Map();
@@ -22,6 +22,35 @@ export class EventClient {
 
         // We need our own event listener here.
         self.addEventListener('message', this._receive.bind(this));
+    }
+
+    public async on(event: string, callback: EventCallback) {
+        if (!this._listeners.has(event)) {
+            this._listeners.set(event, new Set());
+            await this._rpcClient.call('on', event);
+        }
+
+        this._listeners.get(event)!.add(callback);
+    }
+
+    public async off(event: string, callback: EventCallback) {
+        if (!this._listeners.has(event)) return;
+
+        const listeners = this._listeners.get(event)!;
+        listeners.delete(callback);
+
+        if (listeners.size === 0) {
+            this._listeners.delete(event);
+            await this._rpcClient.call('off', event);
+        }
+    }
+
+    public call(command: string, ...args: any[]): Promise<{}> {
+        return this._rpcClient.call(command, ...args);
+    }
+
+    public close() {
+        this._rpcClient.close();
     }
 
     private _init() {
@@ -38,27 +67,6 @@ export class EventClient {
         if (!listeners) return;
         for (const listener of listeners) {
             listener(value);
-        }
-    }
-
-    async on(event: string, callback: EventCallback) {
-        if (!this._listeners.has(event)) {
-            this._listeners.set(event, new Set());
-            await this._rpcClient.call('on', event);
-        }
-
-        this._listeners.get(event)!.add(callback);
-    }
-
-    async off(event: string, callback: EventCallback) {
-        if (!this._listeners.has(event)) return;
-
-        const listeners = this._listeners.get(event)!;
-        listeners.delete(callback);
-
-        if (listeners.size === 0) {
-            this._listeners.delete(event);
-            await this._rpcClient.call('off', event);
         }
     }
 }

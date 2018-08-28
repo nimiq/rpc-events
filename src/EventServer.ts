@@ -1,4 +1,4 @@
-import {RpcServer, State} from "@nimiq/rpc";
+import {RpcServer, State, CommandHandler} from '@nimiq/rpc';
 
 type WindowLike = string | MessagePort | ServiceWorker | Window;
 
@@ -43,7 +43,7 @@ export class EventServer {
         this._rpcServer.init();
     }
 
-    fire(event: string, value: any) {
+    public fire(event: string, value: any) {
         const listeners = this._listeners.get(event);
         if (!listeners) return;
 
@@ -65,5 +65,9 @@ export class EventServer {
 
             target.postMessage({event, value}, state.origin);
         }
+    }
+
+    public onRequest(command: string, fn: CommandHandler) {
+        this._rpcServer.onRequest(command, fn);
     }
 }
