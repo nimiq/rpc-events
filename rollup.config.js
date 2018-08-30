@@ -1,5 +1,5 @@
 // rollup.config.js
-import resolve from 'rollup-plugin-node-resolve';
+const dependencies = Object.keys(require('./package.json').dependencies);
 
 export default [
     {
@@ -8,7 +8,7 @@ export default [
             file: 'dist/rpc-events.common.js',
             format: 'cjs'
         },
-        external: '@nimiq/rpc'
+        external: dependencies
     },
     {
         input: 'build/main.js',
@@ -21,7 +21,7 @@ export default [
                 '@nimiq/rpc': 'Rpc'
             }
         },
-        external: '@nimiq/rpc'
+        external: dependencies
     },
     {
         input: 'build/main.js',
@@ -29,8 +29,6 @@ export default [
             file: 'dist/rpc-events.es.js',
             format: 'es'
         },
-        plugins: [
-            resolve()
-        ]
+        external: dependencies
     }
 ];
