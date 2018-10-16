@@ -45,7 +45,7 @@ export class EventClient {
         }
     }
 
-    public call(command: string, ...args: any[]): Promise<{}> {
+    public call(command: string, ...args: any[]): Promise<any> {
         return this._rpcClient.call(command, ...args);
     }
 
