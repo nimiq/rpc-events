@@ -15,7 +15,7 @@ export default [
         output: {
             file: 'dist/rpc-events.umd.js',
             format: 'umd',
-            name: 'Rpc',
+            name: 'RpcEvents',
             extend: true,
             globals: {
                 '@nimiq/rpc': 'Rpc'
