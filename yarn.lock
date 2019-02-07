@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@nimiq/rpc@^0.0.11":
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/@nimiq/rpc/-/rpc-0.0.11.tgz#7230365640663827fb115e0d6456222de3b1c5e3"
-  integrity sha512-aSTQwsTeSH46ubRDHqB7x82Alq5a9PlMYJUgDVd/4ET1dMTLm+4sjaFiWho3+SjG2n5/v09XKlDUBFDaENYT6w==
+"@nimiq/rpc@^0.1.1":
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/@nimiq/rpc/-/rpc-0.1.1.tgz#7f9b10faab6cc589691db562047d136f0513bf98"
+  integrity sha512-AwZ0JNf5ZZmOJtsjt6EGBZp6R3MyM7JJmbikj0uaSQWmxr9iThNW0Hql8YlAwirNThn0V7ry67j/I3ZtSCafkg==
 
 "@types/estree@0.0.39":
   version "0.0.39"
