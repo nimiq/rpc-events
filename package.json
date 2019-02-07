@@ -1,6 +1,6 @@
 {
   "name": "@nimiq/rpc-events",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "RPC Event Client/Server",
   "repository": {
     "type": "git",
